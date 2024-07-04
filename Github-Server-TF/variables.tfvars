@@ -1,0 +1,8 @@
+vpc-name      = "Github-vpc"
+igw-name      = "Github-igw"
+subnet-name   = "Github-subnet"
+rt-name       = "Github-route-table"
+sg-name       = "Github-sg"
+instance-name = "Github-server"
+key-name      = "Reddit"
+iam-role      = "Github-iam-role"
