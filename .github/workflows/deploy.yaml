@@ -1,63 +1,63 @@
-# name: Build,Analyze,scan
-# on:
-#   push:
-#     branches:
-#       - main
-# jobs:
-#   build-analyze-scan:
-#     name: Build
-#     runs-on: [self-hosted]
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-#         with:
-#           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-#       - name: Build and analyze with SonarQube
-#         uses: sonarsource/sonarqube-scan-action@master
-#         env:
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#       - name: npm install dependency
-#         run: npm install
-#       - name: Trivy file scan
-#         run: trivy fs . > trivyfs.txt
-#       - name: Docker Build and push
-#         run: |
-#           docker build -t zomeal .
-#           docker tag zomeal sreedhar8897/zomeal:latest
-#           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-#           docker push sreedhar8897/zomeal:latest
-#         env:
-#           DOCKER_CLI_ACI: 1
-#       - name: Image scan
-#         run: trivy image sreedhar8897/zomeal:latest > trivyimage.txt
-#   deploy:
-#    needs: build-analyze-scan
-#    runs-on: [self-hosted]
-#    steps:
-#       - name: docker pull image
-#         run: docker pull sreedhar8897/zomeal:latest
-#       - name: Image scan
-#         run: trivy image sreedhar8897/zomeal:latest > trivyimagedeploy.txt
-#       - name: Deploy to container
-#         run: docker run -d --name zomeal -p 3000:3000 sreedhar8897/zomeal:latest
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ secrets.AWS_REGION }}
+name: Build,Analyze,scan
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-analyze-scan:
+    name: Build
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Build and analyze with SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: npm install dependency
+        run: npm install
+      - name: Trivy file scan
+        run: trivy fs . > trivyfs.txt
+      - name: Docker Build and push
+        run: |
+          docker build -t zomeal .
+          docker tag zomeal sugamarora/zomeal:latest
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker push sugamarora/zomeal:latest
+        env:
+          DOCKER_CLI_ACI: 1
+      - name: Image scan
+        run: trivy image sugamarora/zomeal:latest > trivyimage.txt
+  deploy:
+    needs: build-analyze-scan
+    runs-on: [self-hosted]
+    steps:
+      - name: docker pull image
+        run: docker pull sugamarora/zomeal:latest
+      - name: Image scan
+        run: trivy image sugamarora/zomeal:latest > trivyimagedeploy.txt
+      - name: Deploy to container
+        run: docker run -d --name zomeal -p 3000:3000 sugamarora/zomeal:latest
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-#       - name: Update kubeconfig
-#         run: aws eks --region us-east-1 update-kubeconfig --name zomeal-EKS-Cluster
-#       - name: Deploy to kubernetes
-#         run: kubectl apply -f deployment-service.yml
-#       - name: Send a Slack Notification
-#         if: always()
-#         uses: act10ns/slack@v1
-#         with:
-#           status: ${{ job.status }}
-#           steps: ${{ toJson(steps) }}
-#           channel: '#githubactions-eks'
-#         env:
-#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name zomeal-EKS-Cluster
+      - name: Deploy to kubernetes
+        run: kubectl apply -f deployment-service.yml
+    #   - name: Send a Slack Notification
+    #     if: always()
+    #     uses: act10ns/slack@v1
+    #     with:
+    #       status: ${{ job.status }}
+    #       steps: ${{ toJson(steps) }}
+    #       channel: "#githubactions-eks"
+    #     env:
+    #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

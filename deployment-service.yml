@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: zomeal
-        image: sreedhar8897/zomeal:latest
+        image: sugamarora/zomeal:latest
         ports:
         - containerPort: 3000   # Use port 3000
 
