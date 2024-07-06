@@ -6,7 +6,7 @@ on:
 jobs:
   build-analyze-scan:
     name: Build
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
         run: trivy image sugamarora/zomeal:latest > trivyimage.txt
   deploy:
     needs: build-analyze-scan
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     steps:
       - name: docker pull image
         run: docker pull sugamarora/zomeal:latest
