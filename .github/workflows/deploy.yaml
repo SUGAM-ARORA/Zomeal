@@ -40,7 +40,7 @@ jobs:
       - name: Image scan
         run: trivy image sugamarora/zomeal:latest > trivyimagedeploy.txt
       - name: Deploy to container
-        run: docker run -d --name Zomeal -p 3000:3000 sugamarora/zomeal:latest
+        run: docker run -d --name Zomeal -p 3001:3000 sugamarora/zomeal:latest
       - name: Install AWS CLI
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
